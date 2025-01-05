@@ -1,0 +1,26 @@
+@Echo off
+Start "RARA/E8:48:B8:6E:0E:E8 - 192.168.160.211" ping 192.168.160.211 -t
+Start "DANI/C8:3A:35:78:8B:50 - 192.168.190.19" ping 192.168.190.19 -t
+Start "JASENG SAMPING/B4:0F:3B:DA:2D:E8 - 192.168.190.105" ping 192.168.190.105 -t
+Start "ALVIAN/54:AF:97:E4:CE:74 - 192.168.160.29" ping 192.168.160.29 -t
+Start "DILA/28:87:BA:71:38:22 - 192.168.160.8" ping 192.168.160.8 -t
+Start "SIFA/SUSI/B4:B0:24:F6:84:96 - 192.168.160.47 " ping 192.168.160.47  -t
+Start "JASENG/B4:B0:24:F6:89:AC - 192.168.160.4" ping 192.168.160.4 -t
+Start "HENDRI/54:AF:97:FB:7F:9C - 192.168.160.6" ping 192.168.160.6 -t
+Start "BAGUS/54:AF:97:E4:98:7A - " ping  -t
+Start "MUNIR/B4:0F:3B:D8:C6:58 - 192.168.191.204" ping 192.168.191.204 -t
+Start "NAZIYA/28:EE:52:F6:D6:40 - 192.168.160.18" ping 192.168.160.18 -t
+Start "TOPIK/B4:B0:24:F6:8E:A2 - 192.168.160.194" ping 192.168.160.194 -t
+Start "GALANG/D8:47:32:AA:BF:5E - 192.168.160.12" ping 192.168.160.12 -t
+Start "MANTO/54:AF:97:E4:98:5C - 192.168.160.9" ping 192.168.160.9 -t
+Start "ELINANDA/28:87:BA:14:74:4E - 192.168.160.10" ping 192.168.160.10 -t
+Start "CLEO/B4:B0:24:F6:8A:42 - 192.168.160.54" ping 192.168.160.54 -t
+Start "DIVA/28:87:BA:71:0E:D2 - 192.168.160.34" ping 192.168.160.34 -t
+Start "ANGGUN/CC:2D:21:06:B0:F0 - 192.168.190.49" ping 192.168.190.49 -t
+Start "/ - " ping  -t
+Start "WAHYU/ - " ping  -t
+Start "ZIDAN/ - " ping  -t
+Start "/ - " ping  -t
+Start "/ - " ping  -t
+Start "/ - " ping  -t
+Start "YANWAR/C0:06:C3:E2:2A:36 - 192.168.160.24" ping 192.168.160.24 -t

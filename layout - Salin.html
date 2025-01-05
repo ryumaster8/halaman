@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <!-- Tailwind CSS CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+     <!-- Custom CSS untuk dark mode -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+    <!-- DataTables CSS CDN -->
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.css">
+       <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
+    <style>
+         body.dark-mode {
+            background-color: #1a202c;
+            color: #edf2f7;
+        }
+
+        .bg-purple-700.dark-mode {
+            background-color: #2d3748;
+        }
+
+        .bg-purple-900.dark-mode {
+            background-color: #2d3748;
+        }
+        .text-black.dark-mode{
+             color: #edf2f7;
+        }
+         .text-white.dark-mode{
+            color: #1a202c;
+        }
+         .bg-gray-800.dark-mode {
+           background-color: #2d3748;
+        }
+        .bg-white.dark-mode {
+             background-color: #2d3748;
+             color: #edf2f7;
+        }
+       .menu-item.dark-mode{
+          color: #edf2f7;
+        }
+        .hover\:bg-purple-800.dark-mode:hover {
+             background-color: #3d4852;
+        }
+        .sidebar-scroll::-webkit-scrollbar-track.dark-mode {
+            background-color: #4a5568;
+        }
+       .sidebar-scroll::-webkit-scrollbar-thumb.dark-mode {
+            background-color: #6b7280;
+        }
+         .sidebar-scroll::-webkit-scrollbar-thumb.dark-mode:hover {
+             background-color: #cbd5e0;
+        }
+         #menu-search.dark-mode {
+             background-color: #4a5568;
+             color: white;
+            border: 1px solid #6b7280;
+        }
+        .menu-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: background-color 0.2s ease;
+        }
+        .menu-icon {
+            margin-right: 0.5rem; /* Jarak antara icon dan teks */
+        }
+        .arrow-icon {
+            transition: transform 0.3s ease; /* Efek transisi rotasi */
+        }
+        .arrow-icon.rotate {
+            transform: rotate(180deg); /* Rotasi panah saat menu dibuka */
+        }
+        .sub-menu {
+            display: none; /* Sub-menu tersembunyi secara default */
+        }
+        .sub-menu.active {
+            display: block; /* Tampilkan sub-menu saat parent aktif */
+        }
+        .pl-8 {
+            padding-left: 2rem;
+        }
+        .pl-12 {
+            padding-left: 3rem;
+        }
+        .pl-16 {
+            padding-left: 4rem;
+        }
+        .sidebar-scroll {
+            overflow-y: auto; /* Aktifkan scrollbar vertikal */
+            max-height: calc(100vh - 100px); /* Tinggi maksimum sidebar dengan pengurangan untuk header/footer */
+            padding-right: 10px;
+        }
+        .sidebar-scroll::-webkit-scrollbar {
+           width: 8px;
+        }
+
+        .sidebar-scroll::-webkit-scrollbar-track {
+             background-color: #f1f1f1; /* Warna track scrollbar */
+        }
+
+        .sidebar-scroll::-webkit-scrollbar-thumb {
+             background-color: #888; /* Warna thumb scrollbar */
+             border-radius: 5px;
+        }
+        .sidebar-scroll::-webkit-scrollbar-thumb:hover {
+            background-color: #555; /* Warna thumb scrollbar saat hover */
+        }
+
+         #menu-search {
+          margin-bottom: 10px;
+          padding: 8px;
+          border: 1px solid #e2e8f0;
+          border-radius: 5px;
+          background-color: white;
+          color: black;
+        }
+        .menu-item.hidden {
+            display: none;
+        }
+
+          #clear-search {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+             color: #4a5568;
+             display: none; /* Sembunyikan tombol clear secara default */
+        }
+        #clear-search:hover {
+           color: #000;
+        }
+
+          #menu-search:focus + #clear-search,
+          #menu-search:not(:placeholder-shown) + #clear-search {
+             display: inline; /* Tampilkan tombol clear saat searchbox di focus */
+          }
+
+          .main-content {
+            flex: 1; /* Mengambil sisa ruang yang tersedia */
+            display: flex;
+            flex-direction: column; /* Mengatur konten menjadi kolom */
+           }
+           main {
+            flex: 1;
+            padding: 20px;
+          }
+        nav {
+            position: sticky; /* Membuat navbar tetap di posisi atas */
+            top: 0; /* Mengatur posisi navbar di atas */
+            z-index: 10; /* Membuat navbar berada di atas konten lain */
+           }
+        .toggle-full-screen {
+            cursor: pointer;
+           margin-left: 10px;
+          }
+          .fullscreen {
+             position: fixed;
+             top: 0;
+             left: 0;
+             right: 0;
+             bottom: 0;
+            z-index: 100;
+             }
+
+        .fullscreen .main-content {
+              flex-direction: column;
+            }
+        .fullscreen aside{
+               display: none;
+        }
+        .fullscreen nav{
+               display: none;
+        }
+        .fullscreen footer{
+               display: none;
+        }
+         .fullscreen #toggleFullScreenButton {
+             display: block;
+              position: absolute;
+              top: 10px;
+              right: 10px;
+              z-index: 101; /* Pastikan tombol tetap di atas konten */
+          }
+       .fullscreen main {
+             overflow: auto;
+        }
+         .select2-container--default .select2-selection--single {
+             background-color: #ffffff;
+             border: 1px solid #e2e8f0;
+             border-radius: 4px;
+             padding: 6px;
+            height: 38px;
+          }
+          .select2-container--default .select2-selection--single .select2-selection__rendered {
+             line-height: 24px;
+              color: #4a5568;
+          }
+          .select2-container--default .select2-selection--single .select2-selection__arrow {
+               top: 10px;
+         }
+        .group:focus-within .dropdown-menu {
+           display: block;
+        }
+        .group-focus-within:block {
+          display: block;
+       }
+        .group-focus-within .absolute {
+         display: block;
+        }
+
+
+    </style>
+</head>
+<body class="bg-gray-100 font-sans">
+    <div class="flex flex-1">
+        <!-- Sidebar -->
+        <aside class="bg-purple-900 text-white w-64 px-4 py-6 relative sticky top-0">
+            <h2 class="text-2xl font-bold mb-6">Dashboard</h2>
+             <div class="relative">
+              <input type="text" id="menu-search" placeholder="Cari menu..." class="mb-4 text-black w-full"/>
+                <span id="clear-search" class="fas fa-times"></span>
+             </div>
+              <div class="sidebar-scroll">
+                <nav>
+                  <ul>
+                       <li class="mb-2">
+                          <a href="#" class="menu-item block py-2 px-4 hover:bg-purple-800 rounded" onclick="toggleSubMenu(this)">
+                              <span class="flex items-center"><i class="fas fa-tools menu-icon"></i> Servis HP dan Laptop</span>
+                              <i class="fas fa-chevron-down arrow-icon"></i>
+                          </a>
+                          <ul class="sub-menu">
+                              <li class="mb-2"><a href="#" class="menu-item block py-2 pl-8 hover:bg-purple-800 rounded"><i class="fas fa-list menu-icon"></i>Tampil Servis</a></li>
+                              <li class="mb-2"><a href="#" class="menu-item block py-2 pl-8 hover:bg-purple-800 rounded"><i class="fas fa-plus menu-icon"></i>Tambah Servis</a></li>
+                              <li class="mb-2"><a href="#" class="menu-item block py-2 pl-8 hover:bg-purple-800 rounded"><i class="fas fa-history menu-icon"></i>Riwayat Servis</a></li>
+                              <li class="mb-2">
+                                  <a href="#" class="menu-item block py-2 pl-8 hover:bg-purple-800 rounded" onclick="toggleSubMenu(this)">
+                                    <span class="flex items-center"><i class="fas fa-handshake menu-icon"></i>Ambil Servis</span>
+                                    <i class="fas fa-chevron-down arrow-icon"></i>
+                                  </a>
+                                  <ul class="sub-menu ml-4">
+                                    <li class="mb-2">
+                                       <a href="#" class="menu-item block py-2 pl-12 hover:bg-purple-800 rounded" onclick="toggleSubMenu(this)">
+                                          <span class="flex items-center"><i class="fas fa-users menu-icon"></i>Teknisi</span>
+                                         <i class="fas fa-chevron-down arrow-icon"></i>
+                                      </a>
+                                       <ul class="sub-menu ml-4">
+                                           <li class="mb-2"><a href="#" class="menu-item block py-2 pl-16 hover:bg-purple-800 rounded"><i class="fas fa-user-plus menu-icon"></i>Tambah Teknisi</a></li>
+                                           <li class="mb-2"><a href="#" class="menu-item block py-2 pl-16 hover:bg-purple-800 rounded"><i class="fas fa-user-friends menu-icon"></i>Tampil Teknisi</a></li>
+                                       </ul>
+                                    </li>
+                                  </ul>
+                               </li>
+                          </ul>
+                      </li>
+                      <li class="mb-2">
+                          <a href="#" class="menu-item block py-2 px-4 hover:bg-purple-800 rounded" onclick="toggleSubMenu(this)">
+                              <span class="flex items-center"><i class="fas fa-tags menu-icon"></i> Manajemen Kategori</span>
+                              <i class="fas fa-chevron-down arrow-icon"></i>
+                          </a>
+                          <ul class="sub-menu">
+                              <li class="mb-2"><a href="#" class="menu-item block py-2 pl-8 hover:bg-purple-800 rounded"><i class="fas fa-plus menu-icon"></i>Tambah Kategori</a></li>
+                              <li class="mb-2"><a href="#" class="menu-item block py-2 pl-8 hover:bg-purple-800 rounded"><i class="fas fa-list menu-icon"></i>Tampilkan Kategori</a></li>
+                               <li class="mb-2"><a href="#" class="menu-item block py-2 pl-8 hover:bg-purple-800 rounded"><i class="fas fa-check-circle menu-icon"></i>Set Default Kategori</a></li>
+                          </ul>
+                      </li>
+                      <li class="mb-2">
+                          <a href="#" class="menu-item block py-2 px-4 hover:bg-purple-800 rounded" onclick="toggleSubMenu(this)">
+                              <span class="flex items-center"><i class="fas fa-truck menu-icon"></i> Manajemen Supplier</span>
+                              <i class="fas fa-chevron-down arrow-icon"></i>
+                          </a>
+                          <ul class="sub-menu">
+                              <li class="mb-2"><a href="#" class="menu-item block py-2 pl-8 hover:bg-purple-800 rounded"><i class="fas fa-plus menu-icon"></i>Tambah Supplier</a></li>
+                              <li class="mb-2"><a href="#" class="menu-item block py-2 pl-8 hover:bg-purple-800 rounded"><i class="fas fa-list menu-icon"></i>Tampilkan Supplier</a></li>
+                               <li class="mb-2"><a href="#" class="menu-item block py-2 pl-8 hover:bg-purple-800 rounded"><i class="fas fa-check-circle menu-icon"></i>Set Default Supplier</a></li>
+                          </ul>
+                      </li>
+                      <li class="mb-2">
+                           <a href="#" class="menu-item block py-2 px-4 hover:bg-purple-800 rounded" onclick="toggleSubMenu(this)">
+                            <span class="flex items-center"><i class="fas fa-clipboard-list menu-icon"></i>Log Aktivitas</span>
+                             <i class="fas fa-chevron-down arrow-icon"></i>
+                          </a>
+                           <ul class="sub-menu">
+                               <li class="mb-2"><a href="#" class="menu-item block py-2 pl-8 hover:bg-purple-800 rounded"><i class="fas fa-list menu-icon"></i>Tampilkan Log Aktivitas</a></li>
+                           </ul>
+                      </li>
+                      <li class="mb-2">
+                          <a href="#" class="menu-item block py-2 px-4 hover:bg-purple-800 rounded" onclick="toggleSubMenu(this)">
+                              <span class="flex items-center"><i class="fas fa-chart-bar menu-icon"></i>Manajemen Penjualan</span>
+                              <i class="fas fa-chevron-down arrow-icon"></i>
+                          </a>
+                           <ul class="sub-menu">
+                              <li class="mb-2"><a href="#" class="menu-item block py-2 pl-8 hover:bg-purple-800 rounded"><i class="fas fa-file-alt menu-icon"></i>Laporan Penjualan</a></li>
+                              <li class="mb-2"><a href="#" class="menu-item block py-2 pl-8 hover:bg-purple-800 rounded"><i class="fas fa-eye menu-icon"></i>Lihat Penjualan</a></li>
+                              <li class="mb-2"><a href="#" class="menu-item block py-2 pl-8 hover:bg-purple-800 rounded"><i class="fas fa-id-card menu-icon"></i>Detail Membership</a></li>
+                           </ul>
+                      </li>
+                      <li class="mb-2">
+                          <a href="#" class="menu-item block py-2 px-4 hover:bg-purple-800 rounded" onclick="toggleSubMenu(this)">
+                              <span class="flex items-center"><i class="fas fa-store menu-icon"></i>Outlet</span>
+                              <i class="fas fa-chevron-down arrow-icon"></i>
+                          </a>
+                            <ul class="sub-menu">
+                               <li class="mb-2"><a href="#" class="menu-item block py-2 pl-8 hover:bg-purple-800 rounded"><i class="fas fa-edit menu-icon"></i>Edit Profil Outlet</a></li>
+                               <li class="mb-2"><a href="#" class="menu-item block py-2 pl-8 hover:bg-purple-800 rounded"><i class="fas fa-level-up-alt menu-icon"></i>Upgrade Membership</a></li>
+                               <li class="mb-2"><a href="#" class="menu-item block py-2 pl-8 hover:bg-purple-800 rounded"><i class="fas fa-file-invoice-dollar menu-icon"></i>Tagihan</a></li>
+                               <li class="mb-2"><a href="#" class="menu-item block py-2 pl-8 hover:bg-purple-800 rounded"><i class="fas fa-history menu-icon"></i>Riwayat Pembayaran</a></li>
+                                <li class="mb-2"><a href="#" class="menu-item block py-2 pl-8 hover:bg-purple-800 rounded"><i class="fas fa-info-circle menu-icon"></i>Info Outlet</a></li>
+                           </ul>
+                      </li>
+                      <li class="mb-2">
+                           <a href="#" class="menu-item block py-2 px-4 hover:bg-purple-800 rounded">
+                              <span class="flex items-center"><i class="fas fa-desktop menu-icon"></i>Tampilkan Semua Session</span>
+                            </a>
+                       </li>
+                       <li class="mb-2">
+                          <a href="#" class="menu-item block py-2 px-4 hover:bg-purple-800 rounded" onclick="toggleSubMenu(this)">
+                              <span class="flex items-center"><i class="fas fa-comment-dots menu-icon"></i>Saran</span>
+                              <i class="fas fa-chevron-down arrow-icon"></i>
+                          </a>
+                           <ul class="sub-menu">
+                                <li class="mb-2"><a href="#" class="menu-item block py-2 pl-8 hover:bg-purple-800 rounded"><i class="fas fa-paper-plane menu-icon"></i>Kirim Saran</a></li>
+                           </ul>
+                      </li>
+                      <li class="mb-2">
+                           <a href="#" class="menu-item block py-2 px-4 hover:bg-purple-800 rounded">
+                              <span class="flex items-center"><i class="fas fa-sign-out-alt menu-icon"></i>Logout</span>
+                            </a>
+                       </li>
+                      <li class="mb-2">
+                          <a href="#" class="menu-item block py-2 px-4 hover:bg-purple-800 rounded" onclick="toggleSubMenu(this)">
+                              <span class="flex items-center"><i class="fas fa-cog menu-icon"></i> Pengaturan</span>
+                              <i class="fas fa-chevron-down arrow-icon"></i>
+                          </a>
+                          <ul class="sub-menu">
+                              <li class="mb-2"><a href="#" class="menu-item block py-2 pl-8 hover:bg-purple-800 rounded"><i class="fas fa-palette menu-icon"></i>Tema & Tampilan</a></li>
+                              <li class="mb-2"><a href="#" class="menu-item block py-2 pl-8 hover:bg-purple-800 rounded"><i class="fas fa-user-secret menu-icon"></i>Privasi</a></li>
+                              <li class="mb-2"><a href="#" class="menu-item block py-2 pl-8 hover:bg-purple-800 rounded"><i class="fas fa-tachometer-alt menu-icon"></i>Dashboard Kustomisasi</a></li>
+                              <li class="mb-2"><a href="#" class="menu-item block py-2 pl-8 hover:bg-purple-800 rounded"><i class="fas fa-user-lock menu-icon"></i>Pengaturan Hak Akses</a></li>
+                               <li class="mb-2"><a href="#" class="menu-item block py-2 pl-8 hover:bg-purple-800 rounded"><i class="fas fa-shield-alt menu-icon"></i>Keamanan</a></li>
+                               <li class="mb-2"><a href="#" class="menu-item block py-2 pl-8 hover:bg-purple-800 rounded"><i class="fas fa-user-cog menu-icon"></i>Pengaturan User Permissions</a></li>
+                          </ul>
+                      </li>
+
+                  </ul>
+                </nav>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Tombol fullscreen dipindahkan ke sini -->
+            <div class="flex justify-end p-4">
+                <button id="toggleFullScreenButton" class="bg-purple-700 hover:bg-purple-800 text-white p-2 rounded-lg">
+                    <i class="fas fa-expand"></i>
+                </button>
+            </div>
+            
+            <main class="p-4">
+                <h1 class="text-2xl font-semibold mb-4">Data Users</h1>
+                <div class="bg-white shadow-md rounded-lg p-4 mb-4">
+                    <table id="example" class="display" style="width:100%">
+                      <thead>
+                          <tr>
+                              <th>Name</th>
+                              <th>Position</th>
+                              <th>Office</th>
+                              <th>Age</th>
+                              <th>Start date</th>
+                              <th>Salary</th>
+                          </tr>
+                      </thead>
+                      <tbody>
+                            <tr>
+                              <td>Tiger Nixon</td>
+                              <td>System Architect</td>
+                              <td>Edinburgh</td>
+                              <td>61</td>
+                              <td>2011/04/25</td>
+                              <td>$320,800</td>
+                          </tr>
+                          <tr>
+                              <td>Garrett Winters</td>
+                              <td>Accountant</td>
+                              <td>Tokyo</td>
+                              <td>63</td>
+                              <td>2011/07/25</td>
+                              <td>$170,750</td>
+                          </tr>
+                          <tr>
+                              <td>Ashton Cox</td>
+                              <td>Junior Technical Author</td>
+                              <td>San Francisco</td>
+                              <td>66</td>
+                              <td>2009/01/12</td>
+                              <td>$86,000</td>
+                          </tr>
+                          <tr>
+                              <td>Cedric Kelly</td>
+                              <td>Senior Javascript Developer</td>
+                              <td>Edinburgh</td>
+                              <td>22</td>
+                              <td>2012/03/29</td>
+                              <td>$433,060</td>
+                          </tr>
+                           <tr>
+                              <td>Airi Satou</td>
+                              <td>Accountant</td>
+                              <td>Tokyo</td>
+                              <td>33</td>
+                              <td>2008/11/28</td>
+                              <td>$162,700</td>
+                          </tr>
+                           <tr>
+                              <td>Brielle Williamson</td>
+                              <td>Integration Specialist</td>
+                              <td>New York</td>
+                              <td>61</td>
+                              <td>2012/12/02</td>
+                              <td>$372,000</td>
+                          </tr>
+                          <tr>
+                              <td>Herrod Chandler</td>
+                              <td>Sales Assistant</td>
+                              <td>San Francisco</td>
+                              <td>59</td>
+                              <td>2012/08/06</td>
+                              <td>$137,500</td>
+                          </tr>
+                          <tr>
+                              <td>Rhona Davidson</td>
+                              <td>Integration Specialist</td>
+                              <td>Tokyo</td>
+                              <td>55</td>
+                              <td>2010/10/14</td>
+                              <td>$327,900</td>
+                          </tr>
+                           <tr>
+                              <td>Colleen Hurst</td>
+                              <td>Javascript Developer</td>
+                              <td>San Francisco</td>
+                              <td>39</td>
+                              <td>2009/09/15</td>
+                              <td>$205,500</td>
+                          </tr>
+                          <tr>
+                              <td>Sonya Frost</td>
+                              <td>Software Engineer</td>
+                              <td>Edinburgh</td>
+                              <td>23</td>
+                              <td>2008/12/13</td>
+                              <td>$103,600</td>
+                          </tr>
+                             <tr>
+                              <td>Jena Gaines</td>
+                              <td>Office Manager</td>
+                              <td>London</td>
+                              <td>30</td>
+                              <td>2008/12/19</td>
+                              <td>$90,560</td>
+                          </tr>
+                           <tr>
+                              <td>Quinn Flynn</td>
+                              <td>Support Lead</td>
+                              <td>Edinburgh</td>
+                              <td>22</td>
+                              <td>2013/03/03</td>
+                              <td>$342,000</td>
+                          </tr>
+                          <tr>
+                              <td>Charde Marshall</td>
+                              <td>Regional Director</td>
+                              <td>San Francisco</td>
+                              <td>36</td>
+                              <td>2008/10/16</td>
+                              <td>$470,600</td>
+                          </tr>
+                          <tr>
+                              <td>Haley Kennedy</td>
+                              <td>Senior Marketing Designer</td>
+                              <td>London</td>
+                              <td>43</td>
+                              <td>2012/12/18</td>
+                              <td>$313,500</td>
+                          </tr>
+                          <tr>
+                              <td>Tatyana Fitzpatrick</td>
+                              <td>Regional Director</td>
+                              <td>London</td>
+                              <td>19</td>
+                              <td>2010/03/17</td>
+                              <td>$385,750</td>
+                          </tr>
+                          </tbody>
+                      <tfoot>
+                          <tr>
+                              <th>Name</th>
+                              <th>Position</th>
+                              <th>Office</th>
+                              <th>Age</th>
+                              <th>Start date</th>
+                              <th>Salary</th>
+                          </tr>
+                      </tfoot>
+                  </table>
+                </div>
+              <div class="bg-white shadow-md rounded-lg p-4">
+                 <h2 class="text-xl font-semibold mb-4">Form Input User</h2>                   <form id="userForm">
+                        <div class="mb-4">
+                            <label class="block text-gray-700 text-sm font-bold mb-2" for="name">Name</label>
+                            <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="name" type="text" placeholder="Name" required>
+                        </div>
+                         <div class="mb-4">
+                            <label class="block text-gray-700 text-sm font-bold mb-2" for="position">Position</label>
+                             <select class="select2 w-full text-black" id="position" required>
+                              <option value="">-- Select Position --</option>
+                            </select>
+                        </div>
+                         <div class="mb-4">
+                            <label class="block text-gray-700 text-sm font-bold mb-2" for="office">Office</label>
+                           <select class="select2 w-full text-black" id="office" required>
+                              <option value="">-- Select Office --</option>
+                           </select>
+                        </div>
+                        <div class="mb-4">
+                            <label class="block text-gray-700 text-sm font-bold mb-2" for="age">Age</label>
+                            <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="age" type="number" placeholder="Age" required>
+                        </div>
+                        <div class="mb-4">
+                           <label class="block text-gray-700 text-sm font-bold mb-2" for="startdate">Start Date</label>
+                            <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="startdate" type="date" placeholder="Start Date" required>
+                        </div>
+                        <div class="mb-4">
+                            <label class="block text-gray-700 text-sm font-bold mb-2" for="salary">Salary</label>
+                            <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="salary" type="number" placeholder="Salary" required>
+                        </div>
+                        <div class="flex items-center justify-end">
+                             <button class="bg-purple-700 hover:bg-purple-800 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="submit">
+                            Simpan
+                          </button>
+                        </div>
+                  </form>
+              </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- jQuery CDN -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+     <!-- DataTables JS CDN -->
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.js"></script>
+     <!-- Select2 JS CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script>
+        $(document).ready( function () {
+             $('#example').DataTable({
+                "pageLength": 5
+            });
+              $('.select2').select2();
+              // Ambil data dari tabel untuk opsi select
+                var positions = [];
+                var offices = [];
+                $('#example tbody tr').each(function() {
+                    var position = $(this).find('td:eq(1)').text();
+                    var office = $(this).find('td:eq(2)').text();
+                     if (!positions.includes(position)) {
+                        positions.push(position);
+                     }
+                    if (!offices.includes(office)) {
+                       offices.push(office);
+                    }
+                });
+                 positions.forEach(function(position) {
+                 $('#position').append('<option value="' + position + '">' + position + '</option>');
+                 });
+                offices.forEach(function(office) {
+                 $('#office').append('<option value="' + office + '">' + office + '</option>');
+                });
+            // Dark Mode Toggle
+            const darkModeToggle = document.getElementById('darkModeToggle');
+            const darkModeSwitch = document.getElementById('darkModeSwitch');
+             // Fungsi untuk mengaktifkan atau menonaktifkan dark mode
+              function toggleDarkMode() {
+                 document.body.classList.toggle('dark-mode');
+                 document.querySelector('nav').classList.toggle('dark-mode');
+                document.querySelector('aside').classList.toggle('dark-mode');
+                document.querySelector('footer').classList.toggle('dark-mode');
+                document.querySelector('.bg-white').classList.toggle('dark-mode');
+                 $(".menu-item").toggleClass('dark-mode');
+                $('.hover\\:bg-purple-800').toggleClass('dark-mode');
+                  $('.sidebar-scroll::-webkit-scrollbar-track').toggleClass('dark-mode');
+                 $('.sidebar-scroll::-webkit-scrollbar-thumb').toggleClass('dark-mode');
+                 $("#menu-search").toggleClass('dark-mode');
+                 if(darkModeToggle.checked){
+                      darkModeSwitch.style.left = '1.5rem';
+                 } else {
+                       darkModeSwitch.style.left = '0.5rem';
+                   }
+            }
+              // Event listener untuk checkbox dark mode
+           darkModeToggle.addEventListener('change', toggleDarkMode);
+           // Fullscreen Toggle
+             const toggleFullScreenButton = document.querySelector('#toggleFullScreenButton');
+             const bodyElement = document.querySelector('body');
+             let isFullScreen = false;
+               toggleFullScreenButton.addEventListener('click', () => {
+                 isFullScreen = !isFullScreen;
+                const mainContent = document.querySelector('.main-content');
+                if (isFullScreen) {
+                    bodyElement.classList.add('fullscreen');
+                    mainContent.style.transition = 'all 0.3s ease-in-out';
+                   mainContent.classList.add('overflow-auto');
+                } else {
+                     bodyElement.classList.remove('fullscreen');
+                     mainContent.style.transition = 'all 0.3s ease-in-out';
+                     mainContent.classList.remove('overflow-auto');
+                  }
+
+              });
+
+            // Search Menu Function
+             $("#menu-search").on("keyup", function() {
+              var value = $(this).val().toLowerCase();
+                 var clearSearchIcon = $("#clear-search");
+                 if (value) {
+                   clearSearchIcon.show();
+                 } else {
+                      clearSearchIcon.hide();
+                  }
+              $(".menu-item").each(function() {
+                var menuItem = $(this);
+                var menuItemText = menuItem.text().toLowerCase();
+                var subMenu = menuItem.next('.sub-menu');
+
+                // Initially hide the menu item
+                menuItem.addClass('hidden');
+
+                // Check if the menu item itself matches the search
+                if (menuItemText.includes(value)) {
+                  menuItem.removeClass('hidden');
+                } else {
+                    // If this menu item does not match, check the submenus
+                    var subMenuHasMatch = false;
+                    subMenu.find('.menu-item').each(function() {
+                         var subMenuItem = $(this);
+                         var subMenuItemText = subMenuItem.text().toLowerCase();
+                        var subSubMenu = subMenuItem.next('.sub-menu');
+                         // Initially hide the sub menu item
+                       subMenuItem.addClass('hidden');
+
+                      if(subMenuItemText.includes(value)) {
+                           subMenuItem.removeClass('hidden');
+                           subMenuHasMatch = true;
+                      } else {
+                         var subSubMenuHasMatch = false;
+                             subSubMenu.find('.menu-item').each(function(){
+                                var subSubMenuItem = $(this);
+                                 var subSubMenuItemText = subSubMenuItem.text().toLowerCase();
+                                    subSubMenuItem.addClass('hidden');
+                                 if(subSubMenuItemText.includes(value)){
+                                       subSubMenuItem.removeClass('hidden');
+                                       subSubMenuHasMatch = true;
+                                   }
+                               });
+
+                          if(subSubMenuHasMatch) {
+                                subMenuItem.removeClass('hidden');
+                                subMenuHasMatch = true;
+                          }
+                        }
+
+                    });
+
+                  if (subMenuHasMatch) {
+                        menuItem.removeClass('hidden');
+                      // Show the parent sub-menu
+                       subMenu.addClass('active');
+                    // Rotate arrow icon
+                       menuItem.find('.arrow-icon').addClass('rotate');
+                  } else {
+                        // Hide the sub-menu if no match is found within it
+                       subMenu.removeClass('active');
+                       menuItem.find('.arrow-icon').removeClass('rotate');
+                  }
+
+                }
+            });
+        });
+             // Clear Search Function
+           $("#clear-search").on("click", function() {
+                $("#menu-search").val("").focus();
+                  $("#clear-search").hide();
+                $(".menu-item").removeClass("hidden");
+                 $('.sub-menu').removeClass('active');
+                 $('.arrow-icon').removeClass('rotate');
+             });
+        } );
+        function toggleSubMenu(element) {
+          const subMenu = element.nextElementSibling;
+          const arrowIcon = element.querySelector('.arrow-icon');
+          if (subMenu.classList.contains('active')) {
+            subMenu.classList.remove('active');
+            arrowIcon.classList.remove('rotate');
+          } else {
+            subMenu.classList.add('active');
+            arrowIcon.classList.add('rotate');
+          }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const toggleFullScreenButton = document.querySelector('#toggleFullScreenButton');
+            const bodyElement = document.querySelector('body');
+            const icon = toggleFullScreenButton.querySelector('i');
+
+            toggleFullScreenButton.addEventListener('click', () => {
+                bodyElement.classList.toggle('fullscreen');
+                if (bodyElement.classList.contains('fullscreen')) {
+                    icon.classList.remove('fa-expand');
+                    icon.classList.add('fa-compress');
+                } else {
+                    icon.classList.remove('fa-compress');
+                    icon.classList.add('fa-expand');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
